@@ -13,6 +13,14 @@ Parameters:
     Description: "Comma-delimited list of three CIDR Blocks for Public Use"
     Type: CommaDelimitedList
     Default: "10.228.1.0/24, 10.228.11.0/24, 10.228.21.0/24"
+  DocumentDBUsername:
+    Description: Username for DocumentDB
+    Type: String
+    Default: mongoadmin
+  DocumentDBPassword:
+    Description: Password for DocumentDB
+    Type: String
+    NoEcho: True 
 
 
 Resources:
@@ -302,8 +310,8 @@ Resources:
        DBClusterIdentifier : !Sub '${AWS::StackName}-DocDB'
        DBClusterParameterGroupName : !Ref DocDBClusterPG
        DBSubnetGroupName : !Ref DocDBSubnetGroup
-       MasterUsername : "mongoadmin"
-       MasterUserPassword : "demoadminpass"
+       MasterUsername : !Ref DocumentDBUsername
+       MasterUserPassword : !Ref DocumentDBPassword
        Port : "27017"
        PreferredBackupWindow : "07:34-08:04"
        PreferredMaintenanceWindow : "sat:04:51-sat:05:21"

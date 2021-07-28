@@ -7,7 +7,12 @@ read -e REGION
 echo #Setting up vars file"
 > cfvars
 
-aws cloudformation --region $REGION create-stack --stack-name $CLUSTERNAME --template-body file://corevpc.yaml
+echo "Generating password for DocumentDB"
+export DocumentDBPassword=$(openssl rand -base64 12)
+export DocumentDBUsername="mongoadmin"
+
+
+aws cloudformation --region $REGION create-stack --stack-name $CLUSTERNAME --template-body file://corevpc.yaml --parameters ParameterKey=DocumentDBPassword,ParameterValue=$DocumentDBUsername
 sleep 5
 aws cloudformation --region $REGION wait stack-create-complete --stack-name $CLUSTERNAME
 
@@ -43,6 +48,7 @@ echo export CLUSTER_NAME=$CLUSTERNAME >> cfvars
 echo export AWS_REGION=$REGION >> cfvars
 echo export DBSVCSG=$DBSVCSG >> cfvars
 echo export NAMESPACE=$NAMESPACE >> cfvars
+echo export DocumentDBUsername=mongoadmin >> cfvars
 
 # Rewrite cluster name from template file
 
