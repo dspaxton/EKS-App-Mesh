@@ -335,6 +335,12 @@ spec:
       serviceAccountName: demo-frontend
       containers:
       - name: frontend
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/frontendv1
         imagePullPolicy: Always
         ports:
@@ -374,6 +380,12 @@ spec:
       serviceAccountName: demo-frontend
       containers:
       - name: frontend
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/frontendv2
         imagePullPolicy: Always
         ports:
@@ -480,6 +492,12 @@ spec:
       serviceAccountName: backend
       containers:
       - name: backendv1
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/backendv1
         imagePullPolicy: Always
         ports:
@@ -519,6 +537,12 @@ spec:
       serviceAccountName: backend
       containers:
       - name: backendv2
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/backendv2
         imagePullPolicy: Always
         ports:
@@ -558,6 +582,12 @@ spec:
       serviceAccountName: backend
       containers:
       - name: backendv3
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/backendv3
         imagePullPolicy: Always
         ports:
@@ -620,6 +650,12 @@ spec:
       serviceAccountName: db
       containers:
       - name: db
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
         image: ACCOUNTNUMBER.dkr.ecr.REGION.amazonaws.com/db
         imagePullPolicy: Always
         ports:
@@ -669,6 +705,12 @@ spec:
     spec:
       containers:
         - name: envoy
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: 
+                - ALL
           image: 840364872350.dkr.ecr.eu-west-1.amazonaws.com/aws-appmesh-envoy:v1.12.5.0-prod
           ports:
             - containerPort: 8080

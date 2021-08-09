@@ -9,10 +9,11 @@ echo #Setting up vars file"
 
 echo "Generating password for DocumentDB"
 export DocumentDBPassword=$(openssl rand -base64 12)
+#export DocumentDBPassword="mongopassword"
 export DocumentDBUsername="mongoadmin"
 
 
-aws cloudformation --region $REGION create-stack --stack-name $CLUSTERNAME --template-body file://corevpc.yaml --parameters ParameterKey=DocumentDBPassword,ParameterValue=$DocumentDBUsername
+aws cloudformation --region $REGION create-stack --stack-name $CLUSTERNAME --template-body file://corevpc.yaml --parameters ParameterKey=DocumentDBPassword,ParameterValue=$DocumentDBPassword
 sleep 5
 aws cloudformation --region $REGION wait stack-create-complete --stack-name $CLUSTERNAME
 
@@ -27,6 +28,7 @@ export DOCUMENTDBSG=$(aws --region $REGION cloudformation describe-stacks --stac
 export DOCDBENDPOINT=$(aws --region $REGION cloudformation describe-stacks --stack-name $CLUSTERNAME --query "Stacks[0].Outputs[?OutputKey=='DocumentDBEndpoint'].OutputValue" --output text)
 export DBSVCSG=$(aws --region $REGION cloudformation describe-stacks --stack-name $CLUSTERNAME --query "Stacks[0].Outputs[?OutputKey=='DBSVCSG'].OutputValue" --output text)
 export NAMESPACE=$(aws --region $REGION cloudformation describe-stacks --stack-name $CLUSTERNAME --query "Stacks[0].Outputs[?OutputKey=='CloudMapNamespace'].OutputValue" --output text)
+export VPCCIDR=$(aws --region $REGION cloudformation describe-stacks --stack-name $CLUSTERNAME --query "Stacks[0].Outputs[?OutputKey=='VPCCIDR'].OutputValue" --output text)
 export ACCOUNTNUMBER=$(aws --region $REGION sts get-caller-identity --query "Account" --output text )
 export REGION=$REGION
 export CLUSTER_NAME=$CLUSTERNAME
@@ -48,7 +50,9 @@ echo export CLUSTER_NAME=$CLUSTERNAME >> cfvars
 echo export AWS_REGION=$REGION >> cfvars
 echo export DBSVCSG=$DBSVCSG >> cfvars
 echo export NAMESPACE=$NAMESPACE >> cfvars
-echo export DocumentDBUsername=mongoadmin >> cfvars
+echo export DocumentDBUsername=$DocumentDBUsername >> cfvars
+echo export DocumentDBPassword=$DocumentDBPassword >> cfvars
+echo export VPCCIDR=$VPCCIDR >> cfvars
 
 # Rewrite cluster name from template file
 

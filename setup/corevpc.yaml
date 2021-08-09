@@ -49,7 +49,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Select [0, !Ref PublicSubnetBlocks]
-      MapPublicIpOnLaunch: true
+      MapPublicIpOnLaunch: false
       AvailabilityZone: !Select
         - '0'
         - !GetAZs ''
@@ -80,7 +80,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Select [1, !Ref PublicSubnetBlocks]
-      MapPublicIpOnLaunch: true
+      MapPublicIpOnLaunch: false
       AvailabilityZone: !Select
         - '1'
         - !GetAZs ''
@@ -111,7 +111,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Select [2, !Ref PublicSubnetBlocks]
-      MapPublicIpOnLaunch: true
+      MapPublicIpOnLaunch: false
       AvailabilityZone: !Select
         - '2'
         - !GetAZs ''
@@ -268,28 +268,42 @@ Resources:
       GroupDescription: "Access the DB containers from outisde the EKS Cluster"
       VpcId: !Ref VPC
       SecurityGroupIngress:
-        - CidrIp: !Ref VPCCIDR
-          IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
+      - CidrIp: !Ref VPCCIDR
+        IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        Description: Allow inbound access to DB Microservice from VPC
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1 
+        CidrIp: !Ref VPCCIDR
+        Description: Allow outbound access from DB Microservice to VPC
+
       
   DocumentDBSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: DocumentDB Ingress
-      GroupName: DocumentDBSG
       VpcId: !Ref VPC
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 27017
         ToPort: 27017
         CidrIp: !Ref VPCCIDR
+        Description: Allow inbound access to DocumentDB
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1 
+        CidrIp: !Ref VPCCIDR
+        Description: Allow outbound access from DocumentDB
         
   DocDBClusterPG:
     Type: AWS::DocDB::DBClusterParameterGroup
     Properties:
        Description: "DocumentDB Demo ParameterGroup"
-       Family: "docdb3.6"
+       Family: "docdb4.0"
        Name: !Sub '${AWS::StackName}-DocDBPG'
        Parameters: 
             tls: "disabled"
@@ -327,22 +341,22 @@ Resources:
        DBInstanceClass: "db.r5.large"
        DBInstanceIdentifier: !Sub '${AWS::StackName}-DocDB-1'
        PreferredMaintenanceWindow: "sat:06:54-sat:07:24"
-  DocDBInstance2:
-    Type: "AWS::DocDB::DBInstance"
-    Properties:
-       AutoMinorVersionUpgrade: true
-       DBClusterIdentifier: !Ref DocDBCluster
-       DBInstanceClass: "db.r5.large"
-       DBInstanceIdentifier:  !Sub '${AWS::StackName}-DocDB-2'
-       PreferredMaintenanceWindow: "sat:06:54-sat:07:24"
-  DocDBInstance3:
-    Type: "AWS::DocDB::DBInstance"
-    Properties:
-       AutoMinorVersionUpgrade: true
-       DBClusterIdentifier: !Ref DocDBCluster
-       DBInstanceClass: "db.r5.large"
-       DBInstanceIdentifier:  !Sub '${AWS::StackName}-DocDB-3'
-       PreferredMaintenanceWindow: "sat:06:54-sat:07:24"
+  # DocDBInstance2:
+  #   Type: "AWS::DocDB::DBInstance"
+  #   Properties:
+  #     AutoMinorVersionUpgrade: true
+  #     DBClusterIdentifier: !Ref DocDBCluster
+  #     DBInstanceClass: "db.r5.large"
+  #     DBInstanceIdentifier:  !Sub '${AWS::StackName}-DocDB-2'
+  #     PreferredMaintenanceWindow: "sat:06:54-sat:07:24"
+  # DocDBInstance3:
+  #   Type: "AWS::DocDB::DBInstance"
+  #   Properties:
+  #     AutoMinorVersionUpgrade: true
+  #     DBClusterIdentifier: !Ref DocDBCluster
+  #     DBInstanceClass: "db.r5.large"
+  #     DBInstanceIdentifier:  !Sub '${AWS::StackName}-DocDB-3'
+  #     PreferredMaintenanceWindow: "sat:06:54-sat:07:24"
   
   CloudMapNamespace:
     Type: 'AWS::ServiceDiscovery::PrivateDnsNamespace'
@@ -401,3 +415,5 @@ Outputs:
     Value: !Ref CloudMapNamespace
   DBSVCSG:
     Value: !Ref DBSVCSG
+  VPCCIDR:
+    Value: !Ref VPCCIDR

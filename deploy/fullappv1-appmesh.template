@@ -273,6 +273,14 @@ spec:
             cpu: 500m
           requests:
             cpu: 200m
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
+          runAsGroup: 30000
+          runAsUser: 10001
 ---
 apiVersion: v1
 kind: Service
@@ -379,6 +387,14 @@ spec:
             cpu: 500m
           requests:
             cpu: 200m
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
+          runAsGroup: 30000
+          runAsUser: 10001
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -418,6 +434,14 @@ spec:
             cpu: 500m
           requests:
             cpu: 200m
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
+          runAsGroup: 30000
+          runAsUser: 10001
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -457,7 +481,16 @@ spec:
             cpu: 500m
           requests:
             cpu: 200m
-
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: 
+              - ALL
+          runAsUser: 10001
+          runAsGroup: 30000
 ---        
 apiVersion: v1
 kind: Service
@@ -507,6 +540,16 @@ spec:
               cpu: 500m
             requests:
               cpu: 200m
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: 
+                - ALL
+            runAsGroup: 30000
+            runAsUser: 10001              
+              
+
 # Horizontal Pod Autoscalers
 
 ---
@@ -534,7 +577,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: frontend-v1
-  minReplicas: 1
+  minReplicas: 3
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
 ---

@@ -17,6 +17,9 @@ Parameters:
   PrivateNamespace:
     Description: Private Namespace for CloudMap
     Type: String
+  VPCCIDR:
+    Description: CIDR Range for VPC
+    Type: String
 
 
 Resources:
@@ -86,21 +89,36 @@ Resources:
       GroupDescription: "Access the Frontendv3 containers"
       VpcId: !Ref VPCID
       SecurityGroupIngress:
-        - CidrIp: 10.228.0.0/16
+        - CidrIp: !Ref VPCCIDR
           IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
+          Description: Allow inbound access to Task Security Group
 
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0
+        Description: Allow outbound access from Task Security Group
+        
   ECSInstanceSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: "Access the ECS Instances"
       VpcId: !Ref VPCID
       SecurityGroupIngress:
-        - CidrIp: 10.228.0.0/16
+        - CidrIp: !Ref VPCCIDR
           IpProtocol: tcp
           FromPort: 22
           ToPort: 22
+          Description: Allow inbound access to Task Security Group
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535 
+        CidrIp: 0.0.0.0/0
+        Description: Allow outbound access from Instance Security Group
 
   Frontendv3ServiceDiscoveryEntry:
     Type: AWS::ServiceDiscovery::Service

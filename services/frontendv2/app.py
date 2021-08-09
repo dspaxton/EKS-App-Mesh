@@ -17,10 +17,14 @@ import pdb
 class frontend(object):
     @cherrypy.expose
     def index(self):
-        backendresponse = urllib.request.urlopen('http://backend.my-apps.svc.cluster.local:8080/')
-        backendoutput = backendresponse.read().decode('utf-8')
-        response = urllib.request.urlopen('http://db.private-example.com:8080/')
-        output = response.read().decode('utf-8')
+        # backendresponse = urllib.request.urlopen('http://backend.my-apps.svc.cluster.local:8080/')
+        # backendoutput = backendresponse.read().decode('utf-8')
+        url = "http://backend.my-apps.svc.cluster.local:8080"
+        backendoutput = requests.get(url)        
+        # response = urllib.request.urlopen('http://db.private-example.com:8080/')
+        # output = response.read().decode('utf-8')
+        dburl = "http://db.private-example.com:8080/"
+        dboutput = requests.get(dburl)
         html = """<html>
         <title>Frontend</title>
         <center>
@@ -31,8 +35,8 @@ class frontend(object):
           <body>
           <p>Welcome to Frontend V2<br>
           """
-        html += str(backendoutput) + "<BR>"
-        html += "Latest stock info:" + str(output)
+        html += str(backendoutput.text) + "<BR>"
+        html += "Latest stock info:" + str(dboutput.text)
         html += """</head>
           </html>
           """
@@ -58,5 +62,5 @@ if __name__ == '__main__':
         }
     }
     #cherrypy.quickstart(tradechecker(), '/', conf)
-    cherrypy.config.update({'server.socket_host':'0.0.0.0','server.socket_port':8080})
+    cherrypy.config.update({'server.socket_host':'127.0.0.1','server.socket_port':8080})
     cherrypy.quickstart(frontend(), '/', conf)
